@@ -1,25 +1,31 @@
 package br.com.twitter.mentions.listener.gpt;
 
-import br.com.twitter.mentions.listener.gpt.client.TwitterHttpClient;
-import br.com.twitter.mentions.listener.gpt.model.ReferencedTweets;
+import br.com.twitter.mentions.listener.gpt.service.TwitterService;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
 
+    static TwitterService twitterService = new TwitterService();
+
     public static void main(String[] args) throws URISyntaxException, IOException, InterruptedException {
-        TwitterHttpClient twitterHttpClient = new TwitterHttpClient();
+        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
-//        System.out.println(twitterHttpClient.postTweet("Teste Twitter API", "1660127933380296704"));
-
-
-        final var tweetIdToBeReplied = twitterHttpClient.getMentionsFromUserId("1657210389795422210").data().get(0).referencedTweets().stream().filter(referencedTweets -> "replied_to".equals(referencedTweets.type())).findAny().map(ReferencedTweets::id).orElse(null);
-
-        System.out.println(tweetIdToBeReplied);
-        System.out.println(twitterHttpClient.getTweetDataByTweetId(tweetIdToBeReplied).data().text());
+        executorService.scheduleAtFixedRate(() -> {
+            try {
+                System.out.println("Starting iteration...");
+                twitterService.run();
+                System.out.println("Iteration finished.");
+            } catch (URISyntaxException | IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }, 0, 60, TimeUnit.SECONDS);
 
     }
-
 
 }

@@ -1,4 +1,4 @@
-package br.com.twitter.mentions.listener.gpt.model;
+package br.com.twitter.mentions.listener.gpt.model.twitter;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

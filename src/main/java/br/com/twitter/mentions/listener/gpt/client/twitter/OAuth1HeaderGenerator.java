@@ -1,4 +1,4 @@
-package br.com.twitter.mentions.listener.gpt.client;
+package br.com.twitter.mentions.listener.gpt.client.twitter;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;

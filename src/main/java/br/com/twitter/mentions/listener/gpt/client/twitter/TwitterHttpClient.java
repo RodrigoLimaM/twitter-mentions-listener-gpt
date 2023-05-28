@@ -1,4 +1,4 @@
-package br.com.twitter.mentions.listener.gpt.client;
+package br.com.twitter.mentions.listener.gpt.client.twitter;
 
 import java.io.IOException;
 import java.net.URI;
@@ -10,10 +10,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import br.com.twitter.mentions.listener.gpt.model.MentionsResponse;
-import br.com.twitter.mentions.listener.gpt.model.PostTweetRequest;
-import br.com.twitter.mentions.listener.gpt.model.Reply;
-import br.com.twitter.mentions.listener.gpt.model.SingleTweetResponse;
+import br.com.twitter.mentions.listener.gpt.model.twitter.MentionResponse;
+import br.com.twitter.mentions.listener.gpt.model.twitter.PostTweetRequest;
+import br.com.twitter.mentions.listener.gpt.model.twitter.Reply;
+import br.com.twitter.mentions.listener.gpt.model.twitter.SingleTweetResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.message.BasicNameValuePair;
@@ -47,7 +47,7 @@ public class TwitterHttpClient {
         return httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString()).body();
     }
 
-    public MentionsResponse getMentionsFromUserId(final String userId) throws URISyntaxException, IOException, InterruptedException {
+    public MentionResponse getMentionsFromUserId(final String userId) throws URISyntaxException, IOException, InterruptedException {
         final var endpoint = String.format("/users/%s/mentions", userId);
         final var queryParams = new HashMap<String, String>();
         queryParams.put("tweet.fields", "referenced_tweets");
@@ -63,7 +63,7 @@ public class TwitterHttpClient {
                 .header("Authorization", oAuth1HeaderGenerator.generateHeader("GET", TWITTER_API_BASE_URL + endpoint, queryParams))
                 .build();
 
-        return objectMapper.readValue(httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString()).body(), MentionsResponse.class);
+        return objectMapper.readValue(httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString()).body(), MentionResponse.class);
     }
 
     public SingleTweetResponse getTweetDataByTweetId(final String tweetId) throws URISyntaxException, IOException, InterruptedException {

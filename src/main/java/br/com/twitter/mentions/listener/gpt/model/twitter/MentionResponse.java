@@ -1,10 +1,10 @@
-package br.com.twitter.mentions.listener.gpt.model;
+package br.com.twitter.mentions.listener.gpt.model.twitter;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record MentionsResponse(List<TweetData> data) {
+public record MentionResponse(List<TweetData> data) {
 
 }
