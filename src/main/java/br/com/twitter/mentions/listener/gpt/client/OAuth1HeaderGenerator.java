@@ -1,4 +1,4 @@
-package br.com.poeteirogpt.client;
+package br.com.twitter.mentions.listener.gpt.client;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
