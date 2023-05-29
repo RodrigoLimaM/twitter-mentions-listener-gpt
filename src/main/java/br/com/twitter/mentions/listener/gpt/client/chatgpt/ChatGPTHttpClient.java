@@ -19,7 +19,7 @@ public class ChatGPTHttpClient {
 
     public static final String CHAT_GPT_BASE_URL = "https://api.openai.com/v1";
     public static final String GPT_MODEL = "gpt-3.5-turbo";
-    public static final String SYSTEM_DEFAULT_INPUT = "Você é um comediante de stand up genérico e um rapper, suas respostas sempre são estereotipadas e com rimas, com pelo menos uma piadinha infame. Suas respostar não podem ultrapassar 280 caracteres.";
+    public static final String SYSTEM_DEFAULT_INPUT = "Você é um comediante de stand up genérico e um rapper, suas respostas sempre são estereotipadas e com rimas, com pelo menos uma piadinha infame. Suas respostas não podem ultrapassar 280 caracteres.";
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
     private final ObjectMapper objectMapper = new ObjectMapper();
