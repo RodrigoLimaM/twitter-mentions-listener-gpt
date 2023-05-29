@@ -1,7 +1,5 @@
 package br.com.twitter.mentions.listener.gpt.service;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.List;
 import br.com.twitter.mentions.listener.gpt.client.chatgpt.ChatGPTHttpClient;
 import br.com.twitter.mentions.listener.gpt.client.twitter.TwitterHttpClient;
@@ -9,7 +7,10 @@ import br.com.twitter.mentions.listener.gpt.model.chatgpt.Choice;
 import br.com.twitter.mentions.listener.gpt.model.chatgpt.Message;
 import br.com.twitter.mentions.listener.gpt.model.twitter.ReferencedTweet;
 import br.com.twitter.mentions.listener.gpt.model.twitter.TweetData;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class TwitterService {
 
     public static final String BOT_USER_ID = "1657210389795422210";
@@ -20,49 +21,46 @@ public class TwitterService {
 
     private final RedisService redisService = new RedisService();
 
-    public boolean run() throws URISyntaxException, IOException, InterruptedException {
-
-        final var mentionsResponses = twitterHttpClient.getMentionsFromUserId(BOT_USER_ID).data();
-
-        mentionsResponses.forEach(tweetData -> {
-            final var tweetIdToBeReplied = tweetData.id();
-
-            if (isElegibleToReply(tweetData, tweetIdToBeReplied))
-                return;
-
-            final var referencedTweetId = getReferencedTweetId(tweetData.referencedTweets());
-
-            final String repliedTweetText;
-            try {
-                repliedTweetText = twitterHttpClient.getTweetDataByTweetId(referencedTweetId).data().text();
-            } catch (URISyntaxException | IOException | InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
-            final String generatedTweetOutput;
-
-            try {
-                generatedTweetOutput = chatGPTHttpClient.generateOutput(repliedTweetText).choices().stream().findFirst().map(Choice::message).map(Message::content).orElse(null);
-            } catch (URISyntaxException | IOException | InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
-            if (generatedTweetOutput == null)
-                return;
-
-            try {
-                twitterHttpClient.postTweet(generatedTweetOutput, tweetIdToBeReplied);
-            } catch (URISyntaxException | InterruptedException | IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            redisService.set(tweetIdToBeReplied);
-        });
-
-        return false;
+    @SneakyThrows
+    public void run() {
+        twitterHttpClient.getMentionsFromUserId(BOT_USER_ID)
+                .data()
+                .forEach(this::handleMention);
     }
 
-    private boolean isElegibleToReply(TweetData tweetData, String tweetIdToBeReplied) {
+    @SneakyThrows
+    private void handleMention(TweetData tweetData)  {
+        final var tweetIdToBeReplied = tweetData.id();
+
+        if (isEligibleToReply(tweetData, tweetIdToBeReplied)) {
+            log.info("Mention not eligible to reply id={}", tweetIdToBeReplied);
+            return;
+        }
+
+        final var referencedTweetId = getReferencedTweetId(tweetData.referencedTweets());
+        final var textOfRepliedTweet = twitterHttpClient.getTweetDataByTweetId(referencedTweetId).data().text();
+        final var generatedTweetOutput = generateTweetOutput(textOfRepliedTweet);
+
+        if (generatedTweetOutput == null)
+            return;
+
+        twitterHttpClient.postTweet(generatedTweetOutput, tweetIdToBeReplied);
+
+        redisService.set(tweetIdToBeReplied);
+    }
+
+    @SneakyThrows
+    private String generateTweetOutput(final String textOfRepliedTweet) {
+        return chatGPTHttpClient.generateOutput(textOfRepliedTweet)
+                .choices()
+                .stream()
+                .findFirst()
+                .map(Choice::message)
+                .map(Message::content)
+                .orElse(null);
+    }
+
+    private boolean isEligibleToReply(TweetData tweetData, String tweetIdToBeReplied) {
         return tweetData.referencedTweets() == null || redisService.get(tweetIdToBeReplied) != null;
     }
 

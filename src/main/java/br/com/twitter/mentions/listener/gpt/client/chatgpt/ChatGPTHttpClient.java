@@ -4,6 +4,7 @@ import br.com.twitter.mentions.listener.gpt.model.chatgpt.ChatGPTInputRequest;
 import br.com.twitter.mentions.listener.gpt.model.chatgpt.Message;
 import br.com.twitter.mentions.listener.gpt.model.chatgpt.OutputResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.URI;
@@ -13,6 +14,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Arrays;
 
+@Slf4j
 public class ChatGPTHttpClient {
 
     public static final String CHAT_GPT_BASE_URL = "https://api.openai.com/v1";
@@ -38,8 +40,7 @@ public class ChatGPTHttpClient {
                 .build();
 
         final var outputResponse = objectMapper.readValue(httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString()).body(), OutputResponse.class);
-        System.out.printf("Output generated reponse=%s", outputResponse);
-        System.out.println();
+        log.info("Output generated reponse={}", outputResponse);
         return outputResponse;
     }
 

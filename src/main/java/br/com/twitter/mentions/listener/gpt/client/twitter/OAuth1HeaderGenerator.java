@@ -56,7 +56,6 @@ public class OAuth1HeaderGenerator {
         append(base, OAUTH_VERSION, version);
         append(base, OAUTH_SIGNATURE, signature);
         base.deleteCharAt(base.length() - 1);
-        System.out.println("header : " + base);
         return base.toString();
     }
 

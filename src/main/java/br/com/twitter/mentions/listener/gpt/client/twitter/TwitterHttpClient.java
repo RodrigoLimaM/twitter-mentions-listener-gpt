@@ -15,9 +15,11 @@ import br.com.twitter.mentions.listener.gpt.model.twitter.PostTweetRequest;
 import br.com.twitter.mentions.listener.gpt.model.twitter.Reply;
 import br.com.twitter.mentions.listener.gpt.model.twitter.SingleTweetResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.message.BasicNameValuePair;
 
+@Slf4j
 public class TwitterHttpClient {
 
     public static final String TWITTER_API_BASE_URL = "https://api.twitter.com/2";
@@ -45,8 +47,7 @@ public class TwitterHttpClient {
                 .build();
 
         final var body = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString()).body();
-        System.out.printf("Tweet posted response=%s", body);
-        System.out.println();
+        log.info("Tweet posted response={}", body);
     }
 
     public MentionResponse getMentionsFromUserId(final String userId) throws URISyntaxException, IOException, InterruptedException {
@@ -66,8 +67,7 @@ public class TwitterHttpClient {
                 .build();
 
         final var mentionResponse = objectMapper.readValue(httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString()).body(), MentionResponse.class);
-        System.out.printf("Mentions obtained response=%s", mentionResponse);
-        System.out.println();
+        log.info("Mentions obtained response={}", mentionResponse);
         return mentionResponse;
     }
 
@@ -86,8 +86,7 @@ public class TwitterHttpClient {
                 .build();
 
         final var singleTweetResponse = objectMapper.readValue(httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString()).body(), SingleTweetResponse.class);
-        System.out.printf("Tweet data obtained response=%s", singleTweetResponse);
-        System.out.println();
+        log.info("Tweet data obtained response={}", singleTweetResponse);
         return singleTweetResponse;
     }
 
@@ -97,6 +96,7 @@ public class TwitterHttpClient {
                         queryParams.entrySet()
                                 .stream().map(entry -> new BasicNameValuePair(entry.getKey(), entry.getValue())
                 )
-                .collect(Collectors.toList())).build();
+                .collect(Collectors.toList()))
+                .build();
     }
 }
