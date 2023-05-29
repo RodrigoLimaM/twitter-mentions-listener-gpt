@@ -29,12 +29,7 @@ public class TwitterHttpClient {
 
     public void postTweet(final String text, final String inReplyToTweetId) throws URISyntaxException, IOException, InterruptedException {
         final var endpoint = "/tweets";
-        final var oAuth1HeaderGenerator = new OAuth1HeaderGenerator(
-                System.getenv("CONSUMER_KEY"),
-                System.getenv("CONSUMER_SECRET"),
-                System.getenv("ACCESS_TOKEN"),
-                System.getenv("TOKEN_SECRET")
-        );
+        final var oAuth1HeaderGenerator = new TwitterOAuth1HeaderGenerator(false);
         final var httpRequest = HttpRequest.newBuilder()
                 .uri(new URI(TWITTER_API_BASE_URL + endpoint))
                 .POST(
@@ -54,12 +49,7 @@ public class TwitterHttpClient {
         final var endpoint = String.format("/users/%s/mentions", userId);
         final var queryParams = new HashMap<String, String>();
         queryParams.put("tweet.fields", "referenced_tweets");
-        final var oAuth1HeaderGenerator = new OAuth1HeaderGenerator(
-                System.getenv("ELEVATED_CONSUMER_KEY"),
-                System.getenv("ELEVATED_CONSUMER_SECRET"),
-                System.getenv("ELEVATED_ACCESS_TOKEN"),
-                System.getenv("ELEVATED_TOKEN_SECRET")
-        );
+        final var oAuth1HeaderGenerator = new TwitterOAuth1HeaderGenerator(true);
         final var httpRequest = HttpRequest.newBuilder()
                 .uri(buildURI(endpoint, queryParams))
                 .GET()
@@ -73,12 +63,7 @@ public class TwitterHttpClient {
 
     public SingleTweetResponse getTweetDataByTweetId(final String tweetId) throws URISyntaxException, IOException, InterruptedException {
         final var endpoint = String.format("/tweets/%s", tweetId);
-        final var oAuth1HeaderGenerator = new OAuth1HeaderGenerator(
-                System.getenv("ELEVATED_CONSUMER_KEY"),
-                System.getenv("ELEVATED_CONSUMER_SECRET"),
-                System.getenv("ELEVATED_ACCESS_TOKEN"),
-                System.getenv("ELEVATED_TOKEN_SECRET")
-        );
+        final var oAuth1HeaderGenerator = new TwitterOAuth1HeaderGenerator(true);
         final var httpRequest = HttpRequest.newBuilder()
                 .uri(new URI(TWITTER_API_BASE_URL + endpoint))
                 .GET()
@@ -95,8 +80,8 @@ public class TwitterHttpClient {
                 .addParameters(
                         queryParams.entrySet()
                                 .stream().map(entry -> new BasicNameValuePair(entry.getKey(), entry.getValue())
-                )
-                .collect(Collectors.toList()))
+                                )
+                                .collect(Collectors.toList()))
                 .build();
     }
 }

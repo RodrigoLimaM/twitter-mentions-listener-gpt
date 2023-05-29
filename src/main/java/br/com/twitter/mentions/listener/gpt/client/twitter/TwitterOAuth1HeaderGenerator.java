@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-public class OAuth1HeaderGenerator {
+public class TwitterOAuth1HeaderGenerator {
 
     private final String consumerKey;
     private final String consumerSecret;
@@ -23,11 +23,11 @@ public class OAuth1HeaderGenerator {
     private final String tokenSecret;
     private final String version;
 
-    public OAuth1HeaderGenerator(final String consumerKey, final String consumerSecret, final String accessToken, final String tokenSecret) {
-        this.consumerKey = consumerKey;
-        this.consumerSecret = consumerSecret;
-        this.accessToken = accessToken;
-        this.tokenSecret = tokenSecret;
+    public TwitterOAuth1HeaderGenerator(final boolean elevated) {
+        this.consumerKey = elevated ? System.getenv("ELEVATED_CONSUMER_KEY") : System.getenv("CONSUMER_KEY");
+        this.consumerSecret = elevated ? System.getenv("ELEVATED_CONSUMER_SECRET") : System.getenv("CONSUMER_SECRET");
+        this.accessToken = elevated ? System.getenv("ELEVATED_ACCESS_TOKEN") : System.getenv("ACCESS_TOKEN");
+        this.tokenSecret = elevated ? System.getenv("ELEVATED_TOKEN_SECRET") : System.getenv("TOKEN_SECRET");
         this.signatureMethod = "HMAC-SHA1";
         this.version = "1.0";
     }

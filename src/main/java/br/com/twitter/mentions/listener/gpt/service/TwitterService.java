@@ -15,6 +15,7 @@ public class TwitterService {
 
     public static final String BOT_USER_ID = "1657210389795422210";
     public static final String REFERENCED_TWEET_REPLY_TYPE = "replied_to";
+    public static final int MAX_CHARACTERS = 280;
     private final TwitterHttpClient twitterHttpClient = new TwitterHttpClient();
 
     private final ChatGPTHttpClient chatGPTHttpClient = new ChatGPTHttpClient();
@@ -44,7 +45,9 @@ public class TwitterService {
         if (generatedTweetOutput == null)
             return;
 
-        twitterHttpClient.postTweet(generatedTweetOutput, tweetIdToBeReplied);
+        final var limitedTweetOutput = limitCharacters(generatedTweetOutput);
+
+        twitterHttpClient.postTweet(limitedTweetOutput, tweetIdToBeReplied);
 
         redisService.set(tweetIdToBeReplied);
     }
@@ -65,7 +68,15 @@ public class TwitterService {
     }
 
     private static String getReferencedTweetId(final List<ReferencedTweet> referencedTweets) {
-        return referencedTweets.stream().filter(referencedTweet -> REFERENCED_TWEET_REPLY_TYPE.equals(referencedTweet.type())).findAny().map(ReferencedTweet::id).orElse(null);
+        return referencedTweets.stream()
+                .filter(referencedTweet -> REFERENCED_TWEET_REPLY_TYPE.equals(referencedTweet.type()))
+                .findAny()
+                .map(ReferencedTweet::id)
+                .orElse(null);
+    }
+
+    private String limitCharacters(final String value) {
+        return value.substring(0, Math.min(MAX_CHARACTERS, value.length()));
     }
 
 }
