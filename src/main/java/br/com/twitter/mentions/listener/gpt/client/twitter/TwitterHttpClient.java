@@ -25,7 +25,7 @@ public class TwitterHttpClient {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public String postTweet(final String text, final String inReplyToTweetId) throws URISyntaxException, IOException, InterruptedException {
+    public void postTweet(final String text, final String inReplyToTweetId) throws URISyntaxException, IOException, InterruptedException {
         final var endpoint = "/tweets";
         final var oAuth1HeaderGenerator = new OAuth1HeaderGenerator(
                 System.getenv("CONSUMER_KEY"),
@@ -44,7 +44,9 @@ public class TwitterHttpClient {
                 .header("Authorization", oAuth1HeaderGenerator.generateHeader("POST", TWITTER_API_BASE_URL + endpoint, null))
                 .build();
 
-        return httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString()).body();
+        final var body = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString()).body();
+        System.out.printf("Tweet posted response=%s", body);
+        System.out.println();
     }
 
     public MentionResponse getMentionsFromUserId(final String userId) throws URISyntaxException, IOException, InterruptedException {
@@ -63,7 +65,10 @@ public class TwitterHttpClient {
                 .header("Authorization", oAuth1HeaderGenerator.generateHeader("GET", TWITTER_API_BASE_URL + endpoint, queryParams))
                 .build();
 
-        return objectMapper.readValue(httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString()).body(), MentionResponse.class);
+        final var mentionResponse = objectMapper.readValue(httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString()).body(), MentionResponse.class);
+        System.out.printf("Mentions obtained response=%s", mentionResponse);
+        System.out.println();
+        return mentionResponse;
     }
 
     public SingleTweetResponse getTweetDataByTweetId(final String tweetId) throws URISyntaxException, IOException, InterruptedException {
@@ -80,7 +85,10 @@ public class TwitterHttpClient {
                 .header("Authorization", oAuth1HeaderGenerator.generateHeader("GET", TWITTER_API_BASE_URL + endpoint, null))
                 .build();
 
-        return objectMapper.readValue(httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString()).body(), SingleTweetResponse.class);
+        final var singleTweetResponse = objectMapper.readValue(httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString()).body(), SingleTweetResponse.class);
+        System.out.printf("Tweet data obtained response=%s", singleTweetResponse);
+        System.out.println();
+        return singleTweetResponse;
     }
 
     private URI buildURI(final String endpoint, final Map<String, String> queryParams) throws URISyntaxException {

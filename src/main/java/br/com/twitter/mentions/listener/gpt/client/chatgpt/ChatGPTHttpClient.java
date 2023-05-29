@@ -37,7 +37,10 @@ public class ChatGPTHttpClient {
                 .header("Authorization", "Bearer " +System.getenv("CHAT_GPT_API_KEY"))
                 .build();
 
-        return objectMapper.readValue(httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString()).body(), OutputResponse.class);
+        final var outputResponse = objectMapper.readValue(httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString()).body(), OutputResponse.class);
+        System.out.printf("Output generated reponse=%s", outputResponse);
+        System.out.println();
+        return outputResponse;
     }
 
     private static ChatGPTInputRequest buildChatGPTInputRequest(final String tweetText) {
