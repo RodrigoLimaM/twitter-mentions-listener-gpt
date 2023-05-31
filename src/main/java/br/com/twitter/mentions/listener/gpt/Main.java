@@ -11,16 +11,11 @@ public class Main {
     static TwitterService twitterService = new TwitterService();
 
     public static void main(String[] args) {
-        while (true) {
-            try {
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
                 log.info("Starting iteration...");
                 twitterService.run();
                 log.info("Iteration finished.");
-                Thread.sleep(60000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        }, 0, 60, TimeUnit.SECONDS);
     }
 
 }
