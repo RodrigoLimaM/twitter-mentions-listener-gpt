@@ -11,7 +11,7 @@ public class Main {
     static TwitterService twitterService = new TwitterService();
 
     public static void main(String[] args) {
-        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+        Executors.newScheduledThreadPool(1).scheduleAtFixedRate(() -> {
                 log.info("Starting iteration...");
                 twitterService.run();
                 log.info("Iteration finished.");
