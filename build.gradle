@@ -1,16 +1,5 @@
 plugins {
     id 'java'
-    id 'application'
-}
-
-apply plugin : 'java'
-
-ext {
-    javaMainClass = 'br.com.twitter.mentions.listener.gpt.Main'
-}
-
-application {
-    mainClassName = javaMainClass
 }
 
 group = 'br.com.twitter.mentions.listener.gpt'
