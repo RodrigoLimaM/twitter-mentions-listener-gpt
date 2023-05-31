@@ -12,7 +12,9 @@ public class RedisConnectionSingleton {
     private final RedisConnection<String, String> connection;
 
     private RedisConnectionSingleton() {
-        redisClient = new RedisClient(RedisURI.create(System.getenv("REDIS_CONNECTION")));
+        String redisConnection = System.getenv("REDIS_CONNECTION");
+        System.out.println("Teste: " + redisConnection);
+        redisClient = new RedisClient(RedisURI.create(redisConnection));
         connection = redisClient.connect();
         log.info("Connected to Redis");
     }
