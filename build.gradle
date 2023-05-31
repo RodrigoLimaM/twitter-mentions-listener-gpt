@@ -3,6 +3,8 @@ plugins {
     id 'application'
 }
 
+applicationDefaultJvmArgs = ["-Xms256m", "-Xmx512m"]
+
 apply plugin : 'java'
 
 ext {
